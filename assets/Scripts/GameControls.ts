@@ -73,10 +73,10 @@ export class GameControls extends Component {
     const numericInputY = parseInt(inputY, 10);
 
     if (
-      (isNaN(numericInputM),
-      isNaN(numericInputN),
-      isNaN(numericInputX),
-      isNaN(numericInputY))
+      isNaN(numericInputM) ||
+      isNaN(numericInputN) ||
+      isNaN(numericInputX) ||
+      isNaN(numericInputY)
     ) {
       console.error("Invalid input: not a number");
       return;

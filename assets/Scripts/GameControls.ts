@@ -1,5 +1,14 @@
-import { _decorator, Button, Component, director, EditBox, Node } from "cc";
+import {
+  _decorator,
+  Button,
+  Component,
+  director,
+  EditBox,
+  Node,
+  Toggle,
+} from "cc";
 import { GameManager } from "./GameManager";
+import { RandomRange } from "./utils/RandomRange";
 const { ccclass, property } = _decorator;
 
 @ccclass("GameControls")
@@ -18,6 +27,12 @@ export class GameControls extends Component {
 
   @property({ type: EditBox })
   public inputY: EditBox | null = null;
+
+  @property({ type: Toggle })
+  public checkboxSeed: Toggle | null = null;
+
+  @property({ type: EditBox })
+  public inputSeed: EditBox | null = null;
 
   @property({ type: Button })
   public submitButton: Button | null = null;
@@ -45,49 +60,59 @@ export class GameControls extends Component {
     this.inputN.string = `${this.gameManager.N}`;
     this.inputX.string = `${this.gameManager.X}`;
     this.inputY.string = `${this.gameManager.Y}`;
+    this.inputSeed.string = `${this.gameManager.SeedRandom}`;
+    this.checkboxSeed.isChecked = this.gameManager.checkboxSeed;
   }
 
-  private onSubmit(): void {
-    if (
-      !this.inputM ||
-      !this.inputN ||
-      !this.inputX ||
-      !this.inputY ||
-      !this.gameManager
-    )
-      return;
+  private onSubmit(): void | undefined {
+    if (!this.gameManager) return;
+    const inputM = this.validateEditBoxToNumber(this.inputM);
+    const inputN = this.validateEditBoxToNumber(this.inputN);
+    const inputX = this.validateEditBoxToNumber(this.inputX);
+    const inputY = this.validateEditBoxToNumber(this.inputY);
+    const checkboxSeed = this.checkboxSeed.isChecked;
+    const inputSeed = this.processSeed(this.inputSeed);
 
-    const inputM = this.inputM.string;
-    const inputN = this.inputN.string;
-    const inputX = this.inputX.string;
-    const inputY = this.inputY.string;
-
-    if (!inputM || !inputN || !inputX || !inputY) {
-      console.error("Input field is empty");
-      return;
-    }
-
-    const numericInputM = parseInt(inputM, 10);
-    const numericInputN = parseInt(inputN, 10);
-    const numericInputX = parseInt(inputX, 10);
-    const numericInputY = parseInt(inputY, 10);
-
-    if (
-      isNaN(numericInputM) ||
-      isNaN(numericInputN) ||
-      isNaN(numericInputX) ||
-      isNaN(numericInputY)
-    ) {
-      console.error("Invalid input: not a number");
-      return;
-    }
+    if (!inputM || !inputN || !inputX || !inputY || !inputSeed) return;
 
     // Передаем значение в GameManager
     this.gameManager.addScore({
-      M: numericInputM,
-      N: numericInputN,
-      X: numericInputX,
-      Y: numericInputY,
+      m: inputM,
+      n: inputN,
+      x: inputX,
+      y: inputY,
+      seed: inputSeed,
+      checkboxSeed,
     });
+  }
+
+  private validateEditBoxToNumber(input: EditBox): number | null {
+    if (!input) return null;
+
+    const content = input.string;
+
+    if (!content) {
+      console.error("Input field is empty");
+      return null;
+    }
+
+    const numericInput = parseInt(content, 10);
+
+    if (isNaN(numericInput)) {
+      console.error("Invalid input: not a number");
+      return null;
+    }
+
+    return numericInput;
+  }
+
+  private processSeed(seed: EditBox): number | null {
+    const checkboxSeed = this.checkboxSeed.isChecked;
+    if (checkboxSeed) {
+      return this.validateEditBoxToNumber(seed);
+    }
+
+    const rangeInclusive = new RandomRange(1, 1_000, true);
+    return rangeInclusive.getRandomInt();
   }
 }

@@ -9,6 +9,7 @@ import {
   Node,
   Prefab,
   Sprite,
+  Toggle,
 } from "cc";
 import { ClusterFinderDFS, SeededRandom } from "./utils";
 import { BlockFactory } from "./blocks";
@@ -17,10 +18,12 @@ import { EDITOR } from "cc/env";
 const { ccclass, property, executeInEditMode } = _decorator;
 
 type AddScoreType = {
-  M: number;
-  N: number;
-  Y: number;
-  X: number;
+  m: number;
+  n: number;
+  y: number;
+  x: number;
+  seed: number;
+  checkboxSeed: boolean;
 };
 
 /**
@@ -83,6 +86,24 @@ export class GameManager extends Component {
     this.rerender();
   }
 
+  @property({ type: CCInteger })
+  get SeedRandom(): number {
+    return this._seedRandom;
+  }
+  set SeedRandom(value: number) {
+    if (this._seedRandom === value) return;
+
+    this._seedRandom = value;
+    this.rerender();
+  }
+
+  /**
+   * @ru
+   * Статичный сид
+   *  */
+  @property({ type: Boolean })
+  public checkboxSeed: boolean = false;
+
   /**
    * @ru
    * Префаб блока
@@ -114,6 +135,12 @@ export class GameManager extends Component {
    *  */
   private _y: number = 3;
 
+  /**
+   * @ru
+   * Сид рандома
+   *  */
+  private _seedRandom: number = 3;
+
   public fieldMatrix: number[][] = [];
   private _mapLength: number = this._m * this._n;
   public blockForColorTypesMatrix: number[][] = [];
@@ -138,7 +165,7 @@ export class GameManager extends Component {
   private generateMap(): void {
     this.node.removeAllChildren();
     this.fieldMatrix = [];
-    const random = new SeededRandom(12);
+    const random = new SeededRandom(this._seedRandom);
 
     // генерация матрицы последовательности блоков
     let lineMatrix: number[] = [];
@@ -182,12 +209,13 @@ export class GameManager extends Component {
     }
   }
 
-  public addScore({ M, N, X, Y }: AddScoreType): void {
-    this._m = M;
-    this._n = N;
-    this._x = X;
-    this._y = Y;
-
+  public addScore({ m, n, x, y, seed, checkboxSeed }: AddScoreType): void {
+    this._m = m;
+    this._n = n;
+    this._x = x;
+    this._y = y;
+    this._seedRandom = seed;
+    this.checkboxSeed = checkboxSeed;
     this.rerender();
   }
 }

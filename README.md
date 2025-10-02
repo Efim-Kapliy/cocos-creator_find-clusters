@@ -1,98 +1,82 @@
 # cocos-creator_find-clusters
 
-This project is a Cocos Creator game that identifies and visually marks clusters of blocks with the same color in a grid. The grid dimensions, number of color schemes, and minimum cluster size are configurable.
+Этот проект представляет собой игру Cocos Creator, которая определяет и визуально отмечает кластеры блоков одного цвета в сетке. Размеры сетки, количество цветовых схем и минимальный размер кластера можно настраивать.
 
-## Features and Functionality
+## Возможности и функциональность
 
-*   **Dynamic Grid Generation:** Generates a grid of colored blocks based on user-defined dimensions (M x N).
-*   **Configurable Color Schemes:**  Allows specifying the number of color schemes (X) to be used for the blocks.
-*   **Cluster Detection:** Uses a Depth-First Search (DFS) algorithm to find clusters of adjacent blocks with the same color.
-*   **Minimum Cluster Size:** Configurable minimum size (Y) for clusters to be identified. Clusters smaller than this size are ignored.
-*   **Visual Marking:**  Highlights detected clusters with a scaling animation, differentiating them from regular blocks.
-*   **Editor-time Preview:** The grid and cluster highlighting can be previewed within the Cocos Creator editor.
-*   **Input fields:** Allows users to change the parameters of the grid (M, N, X, Y).
+- **Генерация динамической сетки:** создает сетку из цветных блоков на основе указанных пользователем размеров (M x N).
+- **Настраиваемые цветовые схемы:** позволяют указать количество цветовых схем (X), которые будут использоваться для блоков.
+- **Обнаружение кластеров:** использует алгоритм поиска в глубину (DFS) для поиска кластеров смежных блоков одинакового цвета.
+- **Минимальный размер кластера:** настраиваемый минимальный размер (Y) для идентифицируемых кластеров. Кластеры меньше этого размера игнорируются.
+- **Визуальная маркировка:** выделяет обнаруженные кластеры с помощью масштабируемой анимации, отличая их от обычных блоков.
+- **Предварительный просмотр в редакторе:** сетку и выделение кластеров можно предварительно просмотреть в редакторе Cocos Creator.
+- **Поля ввода:** позволяют пользователям изменять параметры сетки (M, N, X, Y).
 
-## Technology Stack
+## Технологический стек
 
-*   **Cocos Creator:**  Game engine used for development.
-*   **TypeScript:** Programming language used for scripting.
-*   **Depth-First Search (DFS):** Algorithm for cluster detection implemented in `assets/Scripts/utils/ClusterFinderDFS.ts`.
+- **Cocos Creator:** игровой движок версии 3.8.7, используемый для разработки.
+- **TypeScript:** язык программирования, используемый для написания скриптов.
+- **Depth-First Search (DFS):** алгоритм обнаружения кластеров, реализованный в `assets/Scripts/utils/ClusterFinderDFS.ts`.
 
-## Prerequisites
+## Инструкция по установке
 
-*   Cocos Creator 3.0 or higher installed.
-*   Basic knowledge of Cocos Creator and TypeScript.
-
-## Installation Instructions
-
-1.  Clone the repository:
+1.  Клонировать репозиторий:
     ```bash
     git clone https://github.com/Efim-Kapliy/cocos-creator_find-clusters.git
     ```
-2.  Open the project in Cocos Creator.
-3.  Ensure all the necessary modules are installed in Cocos Creator.
+2.  Откройте проект в Cocos Creator.
+3.  Убедитесь, что в Cocos Creator установлены все необходимые модули.
 
-## Usage Guide
+## Руководство по использованию
 
-1.  **Open the Scene:**  Open the main scene in the Cocos Creator editor.
-2.  **Configure the Game Manager:** Select the `GameManager` node in the scene hierarchy.
-3.  **Adjust Parameters:** In the Inspector panel, you can adjust the following parameters:
-    *   `M`: Width of the grid (number of columns).
-    *   `N`: Height of the grid (number of rows).
-    *   `X`: Number of color schemes for the blocks.
-    *   `Y`: Minimum size of clusters to be highlighted.
-    *   `blockPrefab`: The prefab to use for generating the blocks.  This should be set to your block prefab.
-4.  **Run the Scene:**  Press the "Play" button in Cocos Creator to run the scene.
-5.  **Marked Blocks Manager:** Select the `MarkedBlocksManager` node in the scene hierarchy.
-    *   `blockPrefab`: The prefab to use for marking the blocks. This should be set to your block prefab with marked animation.
-6.  **EditBox usage:** Use EditBox controls for changing the M, N, X, and Y parameters. Press Submit button to apply new parameters.
+1.  **Открыть сцену:** Откройте основную сцену в редакторе Cocos Creator.
+2.  **Настройте менеджер игры:** выберите `GameManager` узел в иерархии сцены.
+3.  **Настройка параметров:** на панели «Инспектор» вы можете настроить следующие параметры:
+    - `M`: Ширина сетки (количество столбцов).
+    - `N`: Высота сетки (количество строк).
+    - `X`: Количество цветовых схем для блоков.
+    - `Y`: Минимальный размер кластеров для выделения.
+    - `blockPrefab`: префаб, используемый для генерации блоков. Этот префаб должен соответствовать вашему префабу блока.
+4.  **Запустите сцену:** Нажмите кнопку "Play" в Cocos Creator, чтобы запустить сцену.
+5.  **Менеджер отмеченных блоков:** выберите `MarkedBlocksManager` узел в иерархии сцены.
+    - `blockPrefab`: Префаб, используемый для маркировки блоков. В качестве префаба следует выбрать префаб блока с маркированной анимацией.
+6.  **Использование EditBox:** используйте элементы управления EditBox для изменения параметров M, N, X и Y. Нажмите кнопку «Start», чтобы применить новые параметры.
 
-## Code Structure
+## Структура кода
 
-*   `assets/Scripts/GameControls.ts`: Handles user input through `EditBox` components and sends updated parameters to the `GameManager`.
-*   `assets/Scripts/GameManager.ts`:  Generates the grid of blocks, manages game state, and handles parameter updates.  The core logic for creating the block field resides here.  Uses `SeededRandom` for predictable random generation. Uses the `BlockFactory` to instantiate block prefabs.
-*   `assets/Scripts/MarkedBlocksManager.ts`:  Detects clusters using `ClusterFinderDFS` and visually marks them on the grid using the `BlockFactory`.
-*   `assets/Scripts/blocks/`: Contains scripts related to block creation and management.
-    *   `Block.ts`: Abstract base class for blocks.
-    *   `BlockFactory.ts`:  Factory class for creating different types of blocks (simple and marked).
-    *   `SimpleBlock.ts`:  Implementation of a simple block.
-    *   `MarkedBlock.ts`:  Implementation of a marked block with a scaling animation.
-*   `assets/Scripts/utils/`: Contains utility classes.
-    *   `ClusterFinderDFS.ts`:  Implements the Depth-First Search algorithm for finding clusters. Configurable options for `minClusterSize` and `includeDiagonals`.
-    *   `RandomColorGenerator.ts`: Generates a set of random colors.
-    *   `SeededRandom.ts`:  Provides a seeded random number generator for predictable results.
-*   `assets/Scripts/types/`: Contains type definitions.
-    *   `blocks.ts`: Defines `ColorType` as `number[]`.
+- `assets/Scripts/GameControls.ts`: Обрабатывает пользовательский ввод через `EditBox` компоненты и отправляет обновленные параметры в `GameManager`.
+- `assets/Scripts/GameManager.ts`: Генерирует сетку блоков, управляет состоянием игры и обрабатывает обновления параметров. Основная логика создания поля блока находится здесь. Используется `SeededRandom` для предсказуемой случайной генерации. Использует `BlockFactory` для создания экземпляров префабов блоков.
+- `assets/Scripts/MarkedBlocksManager.ts`: Обнаруживает кластеры с помощью `ClusterFinderDFS` и визуально отмечает их на сетке с помощью `BlockFactory`.
+- `assets/Scripts/blocks/`: Содержит скрипты, связанные с созданием и управлением блоками.
+  - `Block.ts`: Абстрактный базовый класс для блоков.
+  - `BlockFactory.ts`: Фабричный класс для создания различных типов блоков (простых и маркированных).
+  - `SimpleBlock.ts`: Реализация простого блока.
+  - `MarkedBlock.ts`: Реализация маркированного блока с анимацией масштабирования.
+- `assets/Scripts/utils/`: Содержит служебные классы.
+  - `ClusterFinderDFS.ts`: Реализует алгоритм поиска в глубину для поиска кластеров. Настраиваемые параметры для `minClusterSize` и `includeDiagonals`.
+  - `RandomColorGenerator.ts`: Генерирует набор случайных цветов.
+  - `SeededRandom.ts`: Предоставляет генератор случайных чисел с начальным значением для получения предсказуемых результатов.
+- `assets/Scripts/types/`: Содержит определения типов.
+  - `blocks.ts`: Определяет `ColorType` как `number[]`.
 
-## API Documentation
+## API Документация
 
-*   **`GameManager.addScore(AddScoreType)`:** Updates the grid parameters (M, N, X, Y) and triggers a rerender of the grid.
-    *   `AddScoreType`: An object with the following properties:
-        *   `M`: Number (grid width).
-        *   `N`: Number (grid height).
-        *   `X`: Number (color schemes).
-        *   `Y`: Minimum cluster size.
-*   **`ClusterFinderDFS.findClusters()`:**  Finds all clusters in the grid that meet the minimum size requirement.  Returns a `Position[][]`, where each `Position[]` is a cluster and each `Position` is a `[row, col]` coordinate within the grid.
-*   **`BlockFactory.createBlock(CreateBlockType)`:** Creates a block based on the specified type and parameters.
-    * `CreateBlockType`:
-        *   `blockType`: "simple" | "marked"
-        *   `prefab`: Prefab
-        *   `parent`: Node
-        *   `positionX`: number
-        *   `positionY`: number
-        *   `colorRGB`: ColorType
+- **`GameManager.addScore(AddScoreType)`:** Обновляет параметры сетки (M, N, X, Y) и запускает повторную визуализацию сетки.
+  - `AddScoreType`: Объект со следующими свойствами:
+    - `M`: Number (ширина сетки).
+    - `N`: Number (высота сетки).
+    - `X`: Number (цветовые схемы).
+    - `Y`: Number (Минимальный размер кластера).
+- **`ClusterFinderDFS.findClusters()`:** находит все кластеры в сетке, соответствующие минимальному размеру. Возвращает `Position[][]`, где каждый `Position[]` — кластер, а каждый `Position` — `[row, col]` координата в сетке.
+- **`BlockFactory.createBlock(CreateBlockType)`:** Создает блок на основе указанного типа и параметров.
+  - `CreateBlockType`:
+    - `blockType`: "simple" | "marked"
+    - `prefab`: Prefab
+    - `parent`: Node
+    - `positionX`: number
+    - `positionY`: number
+    - `colorRGB`: ColorType
 
-## Contributing Guidelines
-
-1.  Fork the repository.
-2.  Create a new branch for your feature or bug fix.
-3.  Make your changes and commit them with descriptive messages.
-4.  Submit a pull request.
-
-## License Information
-
-License not specified.
-
-## Contact/Support Information
+## Контактная информация/информация о поддержке
 
 For questions or support, please contact [Efim-Kapliy](https://github.com/Efim-Kapliy) via GitHub.

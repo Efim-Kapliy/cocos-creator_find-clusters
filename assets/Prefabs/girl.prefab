@@ -1,7 +1,7 @@
 [
   {
     "__type__": "cc.Prefab",
-    "_name": "bg-color-red",
+    "_name": "girl",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_native": "",
@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "bg-color-red",
+    "_name": "girl",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,
@@ -32,8 +32,8 @@
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -192.274,
-      "y": 0,
+      "x": 528.801,
+      "y": -360,
       "z": 0
     },
     "_lrot": {
@@ -50,7 +50,7 @@
       "z": 1
     },
     "_mobility": 0,
-    "_layer": 33554432,
+    "_layer": 1073741824,
     "_euler": {
       "__type__": "cc.Vec3",
       "x": 0,
@@ -73,22 +73,22 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 40,
-      "height": 40
+      "width": 2716,
+      "height": 1496
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0.16715758468335787,
+      "y": 0.5093582887700535
     },
     "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
-    "fileId": "50kT13UkFNR4HePGtrtp4G"
+    "fileId": "97QB97WOlIzLBeKyK7Ips3"
   },
   {
-    "__type__": "cc.Sprite",
+    "__type__": "sp.Skeleton",
     "_name": "",
     "_objFlags": 0,
     "__editorExtras__": {},
@@ -104,33 +104,33 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 159,
-      "g": 96,
-      "b": 201,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
-    "_spriteFrame": {
-      "__uuid__": "bd1bcaba-bd7d-4a71-b143-997c882383e4@f9941",
-      "__expectedType__": "cc.SpriteFrame"
+    "_skeletonData": {
+      "__uuid__": "b7cc28ba-ca4d-47e3-b8a2-d90124ef38da",
+      "__expectedType__": "sp.SkeletonData"
     },
-    "_type": 0,
-    "_fillType": 0,
-    "_sizeMode": 1,
-    "_fillCenter": {
-      "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
-    },
-    "_fillStart": 0,
-    "_fillRange": 0,
-    "_isTrimmedMode": true,
-    "_useGrayscale": false,
-    "_atlas": null,
+    "defaultSkin": "default",
+    "defaultAnimation": "idle",
+    "_premultipliedAlpha": true,
+    "_timeScale": 1,
+    "_preCacheMode": 0,
+    "_cacheMode": 0,
+    "_sockets": [],
+    "_useTint": false,
+    "_debugMesh": false,
+    "_debugBones": false,
+    "_debugSlots": false,
+    "_enableBatch": false,
+    "loop": true,
     "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
-    "fileId": "eaQwl30RBFO4pXURyxqyHk"
+    "fileId": "44IqjqkwdGSp6xVq2MH0z+"
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -140,7 +140,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "f8DFhNSDtLMpUxPozceMcd",
+    "fileId": "afOVWXii5O75p1SpQYjv8d",
     "targetOverrides": null
   }
 ]

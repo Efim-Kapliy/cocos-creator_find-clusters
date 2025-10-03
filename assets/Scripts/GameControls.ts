@@ -23,9 +23,6 @@ export class GameControls extends Component {
   public inputN: EditBox | null = null;
 
   @property({ type: EditBox })
-  public inputX: EditBox | null = null;
-
-  @property({ type: EditBox })
   public inputY: EditBox | null = null;
 
   @property({ type: Toggle })
@@ -45,10 +42,12 @@ export class GameControls extends Component {
     }
   }
 
+  protected start(): void {}
+
   protected onDestroy(): void {
     director.off("game-manager-update", this.listenGameManager, this);
 
-    if (this.submitButton) {
+    if (this.submitButton?.node) {
       this.submitButton.node.off(Button.EventType.CLICK, this.onSubmit, this);
     }
   }
@@ -58,7 +57,6 @@ export class GameControls extends Component {
 
     this.inputM.string = `${this.gameManager.M}`;
     this.inputN.string = `${this.gameManager.N}`;
-    this.inputX.string = `${this.gameManager.X}`;
     this.inputY.string = `${this.gameManager.Y}`;
     this.inputSeed.string = `${this.gameManager.SeedRandom}`;
     this.checkboxSeed.isChecked = this.gameManager.checkboxSeed;
@@ -68,18 +66,16 @@ export class GameControls extends Component {
     if (!this.gameManager) return;
     const inputM = this.validateEditBoxToNumber(this.inputM);
     const inputN = this.validateEditBoxToNumber(this.inputN);
-    const inputX = this.validateEditBoxToNumber(this.inputX);
     const inputY = this.validateEditBoxToNumber(this.inputY);
     const checkboxSeed = this.checkboxSeed.isChecked;
     const inputSeed = this.processSeed(this.inputSeed);
 
-    if (!inputM || !inputN || !inputX || !inputY || !inputSeed) return;
+    if (!inputM || !inputN || !inputY || !inputSeed) return;
 
     // Передаем значение в GameManager
     this.gameManager.addScore({
       m: inputM,
       n: inputN,
-      x: inputX,
       y: inputY,
       seed: inputSeed,
       checkboxSeed,

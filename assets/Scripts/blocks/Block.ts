@@ -1,6 +1,5 @@
 import { _decorator, Color, Component, Node, Sprite } from "cc";
 import { ColorType } from "../types/blocks";
-import { SeededRandom } from "../utils";
 const { ccclass, property } = _decorator;
 
 @ccclass("Block")

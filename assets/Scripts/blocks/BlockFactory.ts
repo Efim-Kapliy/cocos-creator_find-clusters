@@ -5,16 +5,6 @@ import { MarkedBlock } from "./MarkedBlock";
 import { ColorType } from "../types/blocks";
 const { ccclass, property } = _decorator;
 
-/**
- * @ru
- * Массив чисел, представляющий размеры блока [x, y], где x - его ширина, а y - высота.
- * @example
- * ```ts
- * const BLOCK_SIZE: number[] = [40, 40];
- * ```
- *  */
-const BLOCK_SIZE: number[] = [40, 40];
-
 type BlockType = "simple" | "marked";
 type CreateBlockType = {
   blockType: BlockType;

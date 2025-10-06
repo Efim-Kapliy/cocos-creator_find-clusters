@@ -1,4 +1,4 @@
-import { _decorator, CCString, Component, EventTarget, Node, Prefab } from "cc";
+import { _decorator, Component, EventTarget, Prefab } from "cc";
 import { SymbolMapItem } from "./SymbolMapItem";
 const { ccclass, property } = _decorator;
 
@@ -13,19 +13,9 @@ export class SymbolMapContainer extends Component {
     return this._eventTarget;
   }
 
-  public addItem(item: SymbolMapItem) {
-    this.symbolMap.push(item);
-    this._eventTarget.emit("symbol-map-changed", this.symbolMap);
-  }
-
-  public removeItem(index: number) {
-    // Проверяем, можно ли удалять элемент
-    if (this.canRemoveItem(index)) {
-      this.symbolMap.splice(index, 1);
-      this._eventTarget.emit("symbol-map-changed", this.symbolMap);
-    } else {
-      console.warn("Cannot remove locked item!");
-    }
+  // Получить количество символов
+  public getNumberSymbols(): number {
+    return this.symbolMap.length;
   }
 
   // Метод для получения префаба по ID
@@ -40,6 +30,7 @@ export class SymbolMapContainer extends Component {
     return item ? item.spinningSymbolPrefab : null;
   }
 
+  // TODO: Нерабочая реализация locked, нужно добавить скрытие значка корзины в редакторе
   // Запретить удалять элементы с активным флагом
   private canRemoveItem(index: number): boolean {
     return !this.symbolMap[index].locked;

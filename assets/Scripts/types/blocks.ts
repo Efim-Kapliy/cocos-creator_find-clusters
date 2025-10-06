@@ -1,1 +1,1 @@
-export type ColorType = number[];
+export type animateType = "idle" | "win";

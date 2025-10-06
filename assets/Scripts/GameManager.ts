@@ -1,19 +1,4 @@
-import {
-  _decorator,
-  CCBoolean,
-  CCInteger,
-  Color,
-  Component,
-  director,
-  EventTarget,
-  instantiate,
-  Node,
-  Prefab,
-  Sprite,
-  Toggle,
-} from "cc";
-import { ClusterFinderDFS, SeededRandom } from "./utils";
-import { BlockFactory } from "./Blocks";
+import { _decorator, CCInteger, Component, director, Prefab } from "cc";
 import {
   checkboxSeedType,
   mType,
@@ -32,7 +17,6 @@ type AddScoreType = {
 };
 
 @ccclass("GameManager")
-@executeInEditMode
 export class GameManager extends Component {
   @property({ type: CCInteger, serializable: true })
   public mp: number;
@@ -117,10 +101,9 @@ export class GameManager extends Component {
    * @ru
    * Сид рандома
    *  */
-  private _seedRandom: seedType = 3;
+  private _seedRandom: seedType = 27;
 
   public fieldMatrix: number[][] = [];
-  private _mapLength: number = this._m * this._n;
 
   protected onLoad() {}
 
@@ -133,43 +116,7 @@ export class GameManager extends Component {
   }
 
   private rerender(): void {
-    this._mapLength = this._m * this._n;
-    // this.generateMap();
     director.emit("game-manager-update");
-  }
-
-  private generateMap(): void {
-    this.node.removeAllChildren();
-    this.fieldMatrix = [];
-    const random = new SeededRandom(this._seedRandom);
-
-    // генерация матрицы последовательности блоков
-    let lineMatrix: number[] = [];
-    for (let i = 1; i <= this._mapLength; i++) {
-      lineMatrix.push(random.range(0, this._x - 1));
-
-      if (i % this._m == 0) {
-        this.fieldMatrix.push(lineMatrix);
-        lineMatrix = [];
-      }
-    }
-
-    // размещение блоков на сцене
-    for (let y = 0; y < this.fieldMatrix.length; y++) {
-      // создание блоков по линии в матрице
-      for (let x = 0; x < this.fieldMatrix[y].length; x++) {
-        const symbolId = this.fieldMatrix[y][x];
-
-        BlockFactory.createBlock({
-          blockType: "simple",
-          colorRGB: symbolId,
-          parent: this.node,
-          positionX: x * BLOCK_SIZE[0],
-          positionY: y * BLOCK_SIZE[1],
-          prefab: this.blockPrefab,
-        });
-      }
-    }
   }
 
   public addScore({ m, n, y, seed, checkboxSeed }: AddScoreType): void {

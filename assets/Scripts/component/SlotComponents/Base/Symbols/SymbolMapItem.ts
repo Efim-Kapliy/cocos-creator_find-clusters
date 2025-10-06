@@ -9,6 +9,8 @@ export class SymbolMapItem {
   readonly prefab: Prefab | null = null;
   @property({ type: Prefab, displayName: "Spinning Symbol Prefab" })
   readonly spinningSymbolPrefab: Prefab | null = null;
+
+  // TODO: Нерабочая реализация locked, нужно добавить скрытие значка корзины в редакторе
   @property({ type: Boolean, displayName: "Locked" })
   public locked: boolean = false;
 }

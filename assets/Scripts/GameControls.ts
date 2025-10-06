@@ -1,12 +1,4 @@
-import {
-  _decorator,
-  Button,
-  Component,
-  director,
-  EditBox,
-  Node,
-  Toggle,
-} from "cc";
+import { _decorator, Button, Component, director, EditBox, Toggle } from "cc";
 import { GameManager } from "./GameManager";
 import { RandomRange } from "./utils/RandomRange";
 const { ccclass, property } = _decorator;

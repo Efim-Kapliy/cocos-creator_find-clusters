@@ -1,16 +1,15 @@
-import { _decorator, Component, director, Node } from "cc";
+import { _decorator, Component, director, instantiate, sp } from "cc";
 import { GameManager } from "db://assets/Scripts/GameManager";
-import { SymbolMapItem } from "../Symbols/SymbolMapItem";
 import { SymbolMapContainer } from "../Symbols/SymbolMapContainer";
 import {
   mType,
   seedType,
-  xType,
   yType,
 } from "db://assets/Scripts/types/gameManagerTypes";
 import { ClusterFinderDFS, SeededRandom } from "db://assets/Scripts/utils";
-import { BlockFactory } from "db://assets/Scripts/Blocks";
-const { ccclass, property } = _decorator;
+import { SpineAnimationTracker } from "db://assets/Scripts/utils/SpineAnimationTracker";
+import { GameControls } from "db://assets/Scripts/GameControls";
+const { ccclass, property, executeInEditMode } = _decorator;
 
 /**
  * @ru
@@ -23,35 +22,26 @@ const { ccclass, property } = _decorator;
 export const BLOCK_SIZE: number[] = [60, 60];
 
 @ccclass("SlotContainer")
+@executeInEditMode
 export class SlotContainer extends Component {
   @property({ type: GameManager })
   public gameManager: GameManager;
 
-  private _symbolsMapContainer: SymbolMapItem[] = [];
-  private _m: mType;
-  private _amountColorScheme: xType;
+  @property({ type: GameControls })
+  public gameControls: GameControls;
+
+  private _numberHorizontalCharacters: mType;
   private _minClusterSize: yType;
   private _seedRandom: seedType;
   private _mapLength: number;
   private _fieldMatrix: number[][] = [];
+  private _symbolPrefabs: SymbolMapContainer | null = null;
 
   protected onLoad(): void {
-    const container = this.getComponent(SymbolMapContainer);
-    container.eventTarget.on(
-      "symbol-map-changed",
-      this.getSymbolMapContainer,
-      this
-    );
     director.on("game-manager-update", this.listenGameManager, this);
   }
 
   protected onDestroy(): void {
-    const container = this.getComponent(SymbolMapContainer);
-    container.eventTarget.off(
-      "symbol-map-changed",
-      this.getSymbolMapContainer,
-      this
-    );
     director.off("game-manager-update", this.listenGameManager, this);
   }
 
@@ -62,25 +52,28 @@ export class SlotContainer extends Component {
   private listenGameManager(): void {
     if (!this.gameManager) return;
 
+    this._numberHorizontalCharacters = this.gameManager?.M;
     this._minClusterSize = this.gameManager?.Y;
     this._seedRandom = this.gameManager?.SeedRandom;
     this._mapLength = this.gameManager?.M * this.gameManager?.N;
-
     this.rerender();
-  }
-
-  private getSymbolMapContainer(map: SymbolMapItem[]): void {
-    this._symbolsMapContainer = map;
   }
 
   // генерация матрицы последовательности блоков
   private generationOfSymbolSequenceMatrix(): void {
     const random = new SeededRandom(this._seedRandom);
     let lineMatrix: number[] = [];
-    for (let i = 1; i <= this._mapLength; i++) {
-      lineMatrix.push(random.range(0, this._amountColorScheme - 1));
+    const symbolMapContainer =
+      this.gameManager?.getComponent(SymbolMapContainer);
+    if (!symbolMapContainer) return;
 
-      if (i % this._m == 0) {
+    const numberCharacters = symbolMapContainer.getNumberSymbols();
+    if (numberCharacters <= 0) return;
+
+    for (let i = 1; i <= this._mapLength; i++) {
+      lineMatrix.push(random.range(0, numberCharacters - 1));
+
+      if (i % this._numberHorizontalCharacters == 0) {
         this._fieldMatrix.push(lineMatrix);
         lineMatrix = [];
       }
@@ -89,44 +82,108 @@ export class SlotContainer extends Component {
 
   private positioningSymbolsOnSlot(): void {
     this._fieldMatrix = [];
+    this.generationOfSymbolSequenceMatrix();
 
-    if (this._symbolsMapContainer.length === 0) {
-      console.error("Symbols map container is empty!");
+    if (this._fieldMatrix.length === 0) {
+      console.error("The slot matrix is empty!");
       return;
     }
+
     if (!this.gameManager) return;
+    this._symbolPrefabs = this.gameManager?.getComponent(SymbolMapContainer);
+    if (!this._symbolPrefabs) {
+      console.error("Prefabs not found!");
+      return;
+    }
+
     this.node.removeAllChildren();
 
-    // размещение блоков на сцене
-    this._minClusterSize = this.gameManager?.Y;
-    const clustersMap = this.searchCluster();
+    for (let y = 0; y < this._fieldMatrix.length; y++) {
+      // Создание блоков по линии в матрице
+      for (let x = 0; x < this._fieldMatrix[y].length; x++) {
+        console.log(this._fieldMatrix);
+        const positionX = x * BLOCK_SIZE[0];
+        const positionY = y * BLOCK_SIZE[1];
+        const symbolId = this._fieldMatrix[y][x];
+        // ! Есть костыль для symbolId в виде строки — `${symbolId}`
+        const symbolPrefab = this._symbolPrefabs.getPrefabById(`${symbolId}`);
+        if (!symbolPrefab) continue;
+        // Инстанцируем префаб
+        const prefabNode = instantiate(symbolPrefab);
+        if (!prefabNode) {
+          console.error("Failed to instantiate prefab!");
+          continue;
+        }
+        this.node.addChild(prefabNode);
 
-    if (!clustersMap) return;
-    for (let i = 0; i < clustersMap.length; i++) {
-      for (let k = 0; k < clustersMap[i].length; k++) {
-        const posX = clustersMap[i][k][1];
-        const posY = clustersMap[i][k][0];
-        const symbolId = this._fieldMatrix[posY][posX];
+        // Позиционирование блока
+        prefabNode.setPosition(positionX, positionY, 0);
 
-        BlockFactory.createBlock({
-          blockType: "marked",
-          colorRGB: symbolId,
-          parent: this.node,
-          positionX: posX * BLOCK_SIZE[0],
-          positionY: posY * BLOCK_SIZE[1],
-          prefab: this.blockPrefab,
-        });
+        // Ищем ноду со Spine-анимацией
+        const spineNode = prefabNode.getComponentInChildren(sp.Skeleton);
+        if (!spineNode) {
+          console.error("No node with Spine found!");
+          continue;
+        }
+
+        spineNode.setAnimation(0, "idle", false);
       }
     }
+
+    this.addWinAnimation();
   }
 
-  searchCluster(): number[][][] {
+  // Запуск анимации выигрыша у кластеров
+  private addWinAnimation(): void {
+    const clustersMap = this.searchCluster();
+    const spineAnimationTracker = new SpineAnimationTracker();
+
+    // Поиск блоков по кластерам
+    for (const cluster of clustersMap) {
+      // создание блоков по линии в матрице
+      for (const [posY, posX] of cluster) {
+        // Ищем узел по позиции в матрице
+        const childIndex = posY * this._fieldMatrix[0].length + posX;
+        if (childIndex < 0 || childIndex >= this.node.children.length) {
+          console.error(`Invalid child index: ${childIndex}`);
+          continue;
+        }
+
+        const childNode = this.node.children[childIndex];
+        if (!childNode) {
+          console.error(`No child node at (${posX}, ${posY})`);
+          continue;
+        }
+        // Ищем Spine-компонент
+        const spineNode = childNode.getComponentInChildren(sp.Skeleton);
+        if (!spineNode) {
+          console.error(`No Spine component at (${posX}, ${posY})`);
+          continue;
+        }
+        // Меняем анимацию на "win"
+        spineAnimationTracker.addSpineAnimation(spineNode, "win", false);
+      }
+    }
+
+    // Ждём выполнение всех win-анимаций и блокируем кнопку
+    if (!this.gameControls || !this.gameControls?.submitButton) {
+      console.error("Button in gameControls not set");
+    } else {
+      spineAnimationTracker.setButton(this.gameControls?.submitButton);
+    }
+
+    spineAnimationTracker
+      .waitForAllAnimations()
+      .then(() => console.log("Все Spine-анимации завершены!"));
+  }
+
+  private searchCluster(): number[][][] | null {
     if (
       !this._minClusterSize ||
       !this._fieldMatrix ||
       this._fieldMatrix.length === 0
     )
-      return;
+      return null;
 
     const clusterFinderDFS = new ClusterFinderDFS(this._fieldMatrix, {
       minClusterSize: this._minClusterSize,
